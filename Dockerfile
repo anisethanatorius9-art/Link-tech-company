@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql zip
+    && docker-php-ext-install gd pdo pdo_mysql pdo_sqlite zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -24,8 +24,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
+ENV DB_CONNECTION=sqlite \
+    DB_DATABASE=/app/database/database.sqlite
+
 # Copy project
 COPY . .
+
+# Ensure the SQLite database exists before the startup migration runs
+RUN mkdir -p database && touch database/database.sqlite
 
 # Install Laravel dependencies (before npm build so vendor files exist)
 RUN composer install --optimize-autoloader --no-dev
