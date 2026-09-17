@@ -32,7 +32,15 @@ ENV DB_CONNECTION=sqlite \
 COPY . .
 
 # Ensure the SQLite database exists before the startup migration runs
-RUN mkdir -p database && touch database/database.sqlite
+RUN mkdir -p \
+        database \
+        storage/framework/cache \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache \
+    && touch database/database.sqlite \
+    && chmod -R ug+rwX storage bootstrap/cache database
 
 # Install Laravel dependencies (before npm build so vendor files exist)
 RUN composer install --optimize-autoloader --no-dev
@@ -45,6 +53,9 @@ RUN npm run build
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
+mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache\n\
+touch database/database.sqlite\n\
+chmod -R ug+rwX storage bootstrap/cache database\n\
 php artisan migrate --force\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
