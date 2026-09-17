@@ -60,14 +60,14 @@ set -e\n\
 mkdir -p /app/database /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/storage/logs /app/bootstrap/cache\n\
 touch /app/database/database.sqlite\n\
 chmod -R ug+rwX /app/storage /app/bootstrap/cache /app/database\n\
-php artisan cache:clear\n\
-php artisan config:clear\n\
-php artisan route:clear\n\
-php artisan view:clear\n\
 if [ -z "${APP_KEY:-}" ] || [ "${APP_KEY}" = "base64:" ]; then\n\
   php artisan key:generate --force\n\
 fi\n\
 php artisan migrate --force\n\
+php artisan cache:clear\n\
+php artisan config:clear\n\
+php artisan route:clear\n\
+php artisan view:clear\n\
 php artisan serve --host=0.0.0.0 --port=${PORT:-10000}\n' > /app/startup.sh && chmod +x /app/startup.sh
 
 # Expose port
