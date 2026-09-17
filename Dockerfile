@@ -30,9 +30,6 @@ COPY . .
 # Install Laravel dependencies (before npm build so vendor files exist)
 RUN composer install --optimize-autoloader --no-dev
 
-# Clear cached Laravel configuration before compiling Vite assets
-RUN php artisan optimize:clear
-
 # Install Node dependencies
 RUN npm install --legacy-peer-deps
 
