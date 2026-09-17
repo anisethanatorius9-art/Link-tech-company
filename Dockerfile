@@ -29,6 +29,8 @@ ENV DB_CONNECTION=sqlite \
     DB_DATABASE=/app/database/database.sqlite \
     APP_ENV=production \
     APP_DEBUG=true \
+    APP_URL=https://link-tech-company.onrender.com \
+    ASSET_URL=https://link-tech-company.onrender.com \
     DATABASE_URL=sqlite:////app/database/database.sqlite
 
 # Copy project
