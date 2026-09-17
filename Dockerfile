@@ -26,7 +26,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 ENV DB_CONNECTION=sqlite \
-    DB_DATABASE=/app/database/database.sqlite
+    DB_DATABASE=/app/database/database.sqlite \
+    APP_ENV=production \
+    APP_DEBUG=true
 
 # Copy project
 COPY . .
@@ -53,14 +55,19 @@ RUN npm run build
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
+set -e\n\
 mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache\n\
 touch database/database.sqlite\n\
 chmod -R ug+rwX storage bootstrap/cache database\n\
+php artisan cache:clear\n\
+php artisan config:clear\n\
+php artisan route:clear\n\
+php artisan view:clear\n\
+if [ -z "${APP_KEY:-}" ] || [ "${APP_KEY}" = "base64:" ]; then\n\
+  php artisan key:generate --force\n\
+fi\n\
 php artisan migrate --force\n\
-php artisan config:cache\n\
-php artisan route:cache\n\
-php artisan view:cache\n\
-php artisan serve --host=0.0.0.0 --port=10000' > /app/startup.sh && chmod +x /app/startup.sh
+php artisan serve --host=0.0.0.0 --port=${PORT:-10000}\n' > /app/startup.sh && chmod +x /app/startup.sh
 
 # Expose port
 EXPOSE 10000
