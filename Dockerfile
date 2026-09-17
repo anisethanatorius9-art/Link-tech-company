@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libzip-dev \
+    libsqlite3-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
