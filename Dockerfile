@@ -28,7 +28,8 @@ WORKDIR /app
 ENV DB_CONNECTION=sqlite \
     DB_DATABASE=/app/database/database.sqlite \
     APP_ENV=production \
-    APP_DEBUG=true
+    APP_DEBUG=true \
+    DATABASE_URL=sqlite:////app/database/database.sqlite
 
 # Copy project
 COPY . .
@@ -56,9 +57,9 @@ RUN npm run build
 # Create startup script
 RUN echo '#!/bin/bash\n\
 set -e\n\
-mkdir -p database storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache\n\
-touch database/database.sqlite\n\
-chmod -R ug+rwX storage bootstrap/cache database\n\
+mkdir -p /app/database /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/storage/logs /app/bootstrap/cache\n\
+touch /app/database/database.sqlite\n\
+chmod -R ug+rwX /app/storage /app/bootstrap/cache /app/database\n\
 php artisan cache:clear\n\
 php artisan config:clear\n\
 php artisan route:clear\n\
