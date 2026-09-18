@@ -25,13 +25,13 @@ class TenderStatusUpdatedNotification extends Notification implements ShouldQueu
             'approved' => 'Congratulations! Your tender proposal has been accepted. Our procurement team will reach out shortly regarding the next steps.',
             'rejected' => 'We regret to inform you that your tender proposal was not successful for this cycle.',
             'under_review' => 'Your tender proposal is currently undergoing official technical and financial review.',
-            default => 'The status of your tender proposal has been updated to: ' . ucfirst($this->submission->status),
+            default => 'The status of your tender proposal has been updated to: '.ucfirst($this->submission->status),
         };
 
         return (new MailMessage)
-            ->subject('Tender Status Update: ' . $this->submission->tender->title)
-            ->greeting('Dear ' . $this->submission->company_name . ',')
-            ->line('We are writing to update you on your submission for tender Ref: ' . $this->submission->tender->reference_no . '.')
+            ->subject('Tender Status Update: '.$this->submission->tender->title)
+            ->greeting('Dear '.$this->submission->company_name.',')
+            ->line('We are writing to update you on your submission for tender Ref: '.$this->submission->tender->reference_no.'.')
             ->line($statusMessage)
             ->action('View Tenders Page', url('/tenders'))
             ->line('Thank you for participating!');

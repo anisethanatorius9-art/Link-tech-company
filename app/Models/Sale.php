@@ -10,7 +10,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['user_id', 'shift_id', 'payment_method', 'subtotal', 'tax', 'total'])]
 class Sale extends Model
 {
-    protected function casts(): array { return ['subtotal' => 'decimal:2', 'tax' => 'decimal:2', 'total' => 'decimal:2']; }
-    public function shift(): BelongsTo { return $this->belongsTo(Shift::class); }
-    public function items(): HasMany { return $this->hasMany(SaleItem::class); }
+    protected function casts(): array
+    {
+        return ['subtotal' => 'decimal:2', 'tax' => 'decimal:2', 'total' => 'decimal:2'];
+    }
+
+    public function shift(): BelongsTo
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(SaleItem::class);
+    }
 }

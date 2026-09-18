@@ -3,8 +3,8 @@
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\TenderQuoteController;
-use App\Livewire\DocumentVault;
 use App\Livewire\AdminSettings;
+use App\Livewire\DocumentVault;
 use App\Livewire\QuotesPage;
 use App\Livewire\ReportsPage;
 use App\Livewire\TendersPage;

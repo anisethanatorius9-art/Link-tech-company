@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\ProcurementRequest;
 use App\Models\InventoryItem;
+use App\Models\ProcurementRequest;
 use App\Models\Shift;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;

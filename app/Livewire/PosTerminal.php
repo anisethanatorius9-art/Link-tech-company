@@ -43,13 +43,13 @@ class PosTerminal extends Component
         Mail::to($validated['companyEmail'])
             ->cc($validated['customerEmail'])
             ->send(new CompanyFeedbackMail(
-            $validated['company'],
-            $validated['subject'],
-            $validated['message'],
-            'Gilta Makundi',
-            $this->reportFile->get(),
-            $this->reportFile->getClientOriginalName(),
-        ));
+                $validated['company'],
+                $validated['subject'],
+                $validated['message'],
+                'Gilta Makundi',
+                $this->reportFile->get(),
+                $this->reportFile->getClientOriginalName(),
+            ));
 
         $this->reset(['company', 'companyEmail', 'customerEmail', 'subject', 'message', 'reportFile']);
         session()->flash('feedback-sent', 'Feedback report sent successfully.');
