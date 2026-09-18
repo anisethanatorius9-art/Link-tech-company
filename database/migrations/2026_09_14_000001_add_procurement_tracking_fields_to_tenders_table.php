@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('currency', 3)->default('TZS')->after('quoted_amount');
             $table->string('submission_channel')->nullable()->after('currency');
             $table->string('confirmation_reference')->nullable()->after('submission_channel');
-            $table->foreignId('assigned_officer_id')->nullable()->constrained('users')->nullOnDelete()->after('confirmation_reference');
+            $table->foreignId('assigned_officer_id')->nullable()->after('confirmation_reference')->constrained('users')->nullOnDelete();
             $table->decimal('contract_value', 15, 2)->nullable()->after('assigned_officer_id');
             $table->text('outcome_notes')->nullable()->after('contract_value');
         });

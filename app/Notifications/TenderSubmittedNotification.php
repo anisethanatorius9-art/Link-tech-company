@@ -10,11 +10,13 @@ class TenderSubmittedNotification extends Notification
 {
     public function __construct(public Tender $tender) {}
 
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['database', 'mail'];
     }
 
+    /** @return array<string, mixed> */
     public function toArray(object $notifiable): array
     {
         return [

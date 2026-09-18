@@ -94,31 +94,37 @@ class Tender extends Model
         ];
     }
 
+    /** @return HasMany<TenderSubmission, $this> */
     public function submissions(): HasMany
     {
         return $this->hasMany(TenderSubmission::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function assignedOfficer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_officer_id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_id');
     }
 
+    /** @return HasMany<TenderDocument, $this> */
     public function documents(): HasMany
     {
         return $this->hasMany(TenderDocument::class);
     }
 
+    /** @return HasMany<TenderActivity, $this> */
     public function activities(): HasMany
     {
         return $this->hasMany(TenderActivity::class);
     }
 
+    /** @return HasMany<TenderQuoteItem, $this> */
     public function quoteItems(): HasMany
     {
         return $this->hasMany(TenderQuoteItem::class);

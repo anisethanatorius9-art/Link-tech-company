@@ -8,6 +8,7 @@ use App\Notifications\TenderStatusUpdatedNotification;
 use Flux\Flux;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -68,7 +69,7 @@ class TenderSubmissions extends Component
         Flux::toast(variant: 'success', text: "Bid from {$submission->company_name} accepted. Other bids were rejected.");
     }
 
-    public function render()
+    public function render(): View
     {
         $submissions = TenderSubmission::query()
             ->with('tender')

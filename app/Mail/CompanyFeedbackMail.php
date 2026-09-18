@@ -31,6 +31,7 @@ class CompanyFeedbackMail extends Mailable
         return new Content(view: 'emails.company-feedback');
     }
 
+    /** @return array<int, Attachment> */
     public function attachments(): array
     {
         return [

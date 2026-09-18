@@ -7,10 +7,12 @@ use App\Models\TenderActivity;
 use App\Models\User;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use RuntimeException;
 
 #[Layout('layouts.admin')]
 class AdminSettings extends Component
@@ -107,12 +109,20 @@ class AdminSettings extends Component
         ]);
 
         if ($this->logo) {
-            $settings->logo_path = $this->logo->store('company', 'public');
+            $logoPath = $this->logo->store('company', 'public');
+            if ($logoPath === false) {
+                throw new RuntimeException('Unable to store the company logo.');
+            }
+            $settings->logo_path = $logoPath;
         }
 
         if ($this->stamp) {
             $branding = $settings->branding_assets ?? [];
-            $branding['stamp_path'] = $this->stamp->store('company', 'public');
+            $stampPath = $this->stamp->store('company', 'public');
+            if ($stampPath === false) {
+                throw new RuntimeException('Unable to store the company stamp.');
+            }
+            $branding['stamp_path'] = $stampPath;
             $settings->branding_assets = $branding;
         }
 
@@ -164,7 +174,7 @@ class AdminSettings extends Component
         Flux::toast(variant: 'success', text: __('System alerts saved.'));
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin-settings', [
             'activities' => $this->tab === 'audit'
@@ -183,10 +193,14 @@ class AdminSettings extends Component
         $this->address = (string) $settings?->address;
         $this->tin = (string) $settings?->tin;
         $this->vrn = (string) $settings?->vrn;
-        $contact = $settings?->contact_details ?? [];
-        $legal = $settings?->legal_identifiers ?? [];
-        $rules = $settings?->workflow_rules ?? [];
-        $alerts = $settings?->notification_settings ?? [];
+        $contact = $settings ? $settings->contact_details : null;
+        $legal = $settings ? $settings->legal_identifiers : null;
+        $rules = $settings ? $settings->workflow_rules : null;
+        $alerts = $settings ? $settings->notification_settings : null;
+        $contact = is_array($contact) ? $contact : [];
+        $legal = is_array($legal) ? $legal : [];
+        $rules = is_array($rules) ? $rules : [];
+        $alerts = is_array($alerts) ? $alerts : [];
         $this->companyPhone = (string) ($contact['phone'] ?? '');
         $this->companyEmail = (string) ($contact['email'] ?? '');
         $this->website = (string) ($contact['website'] ?? '');

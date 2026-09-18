@@ -23,6 +23,7 @@ class TenderQuoteItem extends Model
         return ['quantity' => 'decimal:2', 'unit_price' => 'decimal:2', 'vat_rate' => 'decimal:2'];
     }
 
+    /** @return BelongsTo<Tender, $this> */
     public function tender(): BelongsTo
     {
         return $this->belongsTo(Tender::class);

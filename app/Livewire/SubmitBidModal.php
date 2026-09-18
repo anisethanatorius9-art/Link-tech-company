@@ -6,6 +6,7 @@ use App\Models\Tender;
 use App\Models\TenderSubmission;
 use Flux\Flux;
 use Illuminate\Http\UploadedFile;
+use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -39,6 +40,7 @@ class SubmitBidModal extends Component
         $this->showModal = true;
     }
 
+    /** @return array<string, array<int, mixed>> */
     protected function rules(): array
     {
         return [
@@ -81,7 +83,7 @@ class SubmitBidModal extends Component
         Flux::toast(variant: 'success', text: 'Your tender bid has been submitted successfully.');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.submit-bid-modal');
     }

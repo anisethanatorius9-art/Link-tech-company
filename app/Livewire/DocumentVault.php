@@ -5,8 +5,10 @@ namespace App\Livewire;
 use App\Models\CompanyDocument;
 use App\Models\User;
 use Flux\Flux;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -20,7 +22,7 @@ class DocumentVault extends Component
 
     public string $expiresAt = '';
 
-    public $file = null;
+    public ?UploadedFile $file = null;
 
     public function upload(): void
     {
@@ -40,7 +42,7 @@ class DocumentVault extends Component
         $document->delete();
     }
 
-    public function render()
+    public function render(): View
     {
         $documents = CompanyDocument::query()->latest()->get()->groupBy('category');
 

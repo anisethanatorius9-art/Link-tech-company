@@ -6,6 +6,7 @@ use App\Models\Tender;
 use App\Models\User;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Dashboard extends Component
@@ -87,7 +88,7 @@ class Dashboard extends Component
         Flux::toast(variant: 'success', text: 'Tender assignment saved as draft.');
     }
 
-    public function render()
+    public function render(): View
     {
         $currentUser = Auth::user();
         $isAdmin = $currentUser instanceof User && $currentUser->isAdmin();

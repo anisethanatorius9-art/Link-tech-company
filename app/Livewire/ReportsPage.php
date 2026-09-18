@@ -5,13 +5,14 @@ namespace App\Livewire;
 use App\Models\Tender;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class ReportsPage extends Component
 {
     public string $period = 'year';
 
-    public function render()
+    public function render(): View
     {
         $user = Auth::user();
         $isAdmin = $user instanceof User && $user->isAdmin();

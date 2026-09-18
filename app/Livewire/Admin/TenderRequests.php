@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Tender;
 use Flux\Flux;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class TenderRequests extends Component
@@ -27,7 +28,7 @@ class TenderRequests extends Component
         Flux::toast(variant: 'success', text: 'Tender request rejected.');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin.tender-requests', [
             'tenders' => Tender::query()->where('status', 'pending')->latest()->get(),

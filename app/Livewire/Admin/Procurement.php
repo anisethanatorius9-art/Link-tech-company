@@ -12,6 +12,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -72,6 +73,7 @@ class Procurement extends Component
         Flux::toast(variant: 'success', text: 'Quotation uploaded and sent to the customer.');
     }
 
+    /** @return array<string, array<int, mixed>> */
     protected function rules(): array
     {
         return [
@@ -209,7 +211,7 @@ class Procurement extends Component
         $this->resetValidation();
     }
 
-    public function render()
+    public function render(): View
     {
         $tenders = Tender::query()
             ->with(['assignedOfficer', 'creator', 'documents'])

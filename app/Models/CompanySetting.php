@@ -4,6 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string|null $logo_path
+ * @property array<string, mixed>|null $contact_details
+ * @property array<string, mixed>|null $legal_identifiers
+ * @property array<string, mixed>|null $branding_assets
+ * @property array<string, mixed>|null $workflow_rules
+ * @property array<string, mixed>|null $notification_settings
+ */
 class CompanySetting extends Model
 {
     protected $fillable = [

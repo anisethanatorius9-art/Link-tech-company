@@ -5,9 +5,12 @@ namespace App\Livewire;
 use App\Models\CompanySetting;
 use App\Models\User;
 use Flux\Flux;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use RuntimeException;
 
 class CompanySettings extends Component
 {
@@ -23,7 +26,7 @@ class CompanySettings extends Component
 
     public int $deadlineReminderDays = 3;
 
-    public $logo = null;
+    public ?UploadedFile $logo = null;
 
     public function mount(): void
     {
@@ -43,13 +46,17 @@ class CompanySettings extends Component
         $settings = CompanySetting::query()->firstOrNew();
         $settings->fill(['company_name' => $data['companyName'], 'address' => $data['address'], 'tin' => $data['tin'], 'vrn' => $data['vrn'], 'deadline_reminder_days' => $data['deadlineReminderDays']]);
         if ($this->logo) {
-            $settings->logo_path = $this->logo->store('company', 'public');
+            $logoPath = $this->logo->store('company', 'public');
+            if ($logoPath === false) {
+                throw new RuntimeException('Unable to store the company logo.');
+            }
+            $settings->logo_path = $logoPath;
         }
         $settings->save();
         Flux::toast(variant: 'success', text: 'Company settings saved.');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.company-settings');
     }

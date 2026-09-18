@@ -33,6 +33,7 @@ class TenderSubmission extends Model
         'status',
     ];
 
+    /** @return BelongsTo<Tender, $this> */
     public function tender(): BelongsTo
     {
         return $this->belongsTo(Tender::class);

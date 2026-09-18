@@ -14,6 +14,7 @@ class TenderDeadlineReminderNotification extends Notification implements ShouldQ
 
     public function __construct(public Tender $tender) {}
 
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['mail'];

@@ -8,6 +8,7 @@ use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class AdminUsers extends Component
@@ -34,6 +35,7 @@ class AdminUsers extends Component
 
     public bool $forcePasswordChange = true;
 
+    /** @return array<string, array<int, mixed>> */
     protected function rules(): array
     {
         return [
@@ -112,7 +114,7 @@ class AdminUsers extends Component
         $this->resetValidation();
     }
 
-    public function render()
+    public function render(): View
     {
         $users = User::query()
             ->when($this->search !== '', fn ($query) => $query->where(fn ($query) => $query->where('name', 'like', '%'.$this->search.'%')->orWhere('email', 'like', '%'.$this->search.'%')))

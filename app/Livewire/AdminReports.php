@@ -3,11 +3,12 @@
 namespace App\Livewire;
 
 use App\Models\ProcurementRequest;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class AdminReports extends Component
 {
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin.reports', [
             'total' => ProcurementRequest::query()->count(),

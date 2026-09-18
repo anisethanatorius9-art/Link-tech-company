@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use RuntimeException;
 
 class TenderQuoteController extends Controller
 {
@@ -54,6 +55,9 @@ class TenderQuoteController extends Controller
         ob_start();
         $writer->save('php://output');
         $content = ob_get_clean();
+        if ($content === false) {
+            throw new RuntimeException('Unable to capture the quotation export.');
+        }
 
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

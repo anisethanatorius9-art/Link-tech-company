@@ -9,6 +9,7 @@ use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class RequestForm extends Component
@@ -79,10 +80,13 @@ class RequestForm extends Component
             } elseif ($this->type === 'inventory_restock') {
                 $quantity = (int) ($validated['quantity'] ?: 0);
                 abort_unless($quantity > 0, 422, 'Received quantity is required.');
-                InventoryItem::query()->updateOrCreate(
-                    ['name' => $validated['title']],
-                    ['category' => $validated['category'], 'stock' => DB::raw('stock + '.$quantity), 'unit_cost' => $validated['unitCost'] ?: 0, 'unit_price' => $validated['unitPrice'] ?: 0, 'active' => true],
-                );
+                $inventoryItem = InventoryItem::query()->where('name', $validated['title'])->first();
+                if ($inventoryItem) {
+                    $inventoryItem->update(['category' => $validated['category'], 'unit_cost' => $validated['unitCost'] ?: 0, 'unit_price' => $validated['unitPrice'] ?: 0, 'active' => true]);
+                    $inventoryItem->increment('stock', $quantity);
+                } else {
+                    InventoryItem::query()->create(['name' => $validated['title'], 'category' => $validated['category'], 'stock' => $quantity, 'unit_cost' => $validated['unitCost'] ?: 0, 'unit_price' => $validated['unitPrice'] ?: 0, 'active' => true]);
+                }
                 ProcurementRequest::create([
                     'title' => $validated['title'], 'category' => $validated['category'], 'quantity' => $quantity, 'received_quantity' => $quantity,
                     'unit_cost' => $validated['unitCost'], 'unit_price' => $validated['unitPrice'], 'received_at' => now(), 'notes' => $validated['notes'],
@@ -101,18 +105,19 @@ class RequestForm extends Component
         Flux::toast(variant: 'success', text: __($this->type === 'staff_shift' ? 'Shift closed successfully.' : ($this->type === 'inventory_restock' ? 'Goods received and stock updated.' : 'Purchase order created.')));
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.request-form', [
-            'heading' => match ($this->type) {
-                'supplier_order' => 'New supplier order',
-                'staff_shift' => 'Staff shift review',
-                'inventory_restock' => 'Inventory restock',
+            'heading' => match (true) {
+                $this->type === 'supplier_order' => 'New supplier order',
+                $this->type === 'staff_shift' => 'Staff shift review',
+                $this->type === 'inventory_restock' => 'Inventory restock',
+                default => throw new \LogicException('Unsupported request type.'),
             },
-            'description' => match ($this->type) {
-                'supplier_order' => 'Create a request for networking, computer or electrical equipment from a supplier.',
-                'staff_shift' => 'Record a staff coverage request for receiving and processing incoming orders.',
-                'inventory_restock' => 'Request replenishment for equipment needed by the company.',
+            'description' => match (true) {
+                $this->type === 'supplier_order' => 'Create a request for networking, computer or electrical equipment from a supplier.',
+                $this->type === 'staff_shift' => 'Record a staff coverage request for receiving and processing incoming orders.',
+                default => 'Request replenishment for equipment needed by the company.',
             },
         ]);
     }

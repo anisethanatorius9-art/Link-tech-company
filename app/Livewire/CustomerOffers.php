@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\ProcurementRequest;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class CustomerOffers extends Component
@@ -32,7 +33,7 @@ class CustomerOffers extends Component
             ->findOrFail($requestId);
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.customer-offers', [
             'requests' => ProcurementRequest::query()

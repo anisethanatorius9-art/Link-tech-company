@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\ProcurementRequest;
 use App\Models\User;
 use Dompdf\Dompdf;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -34,6 +38,9 @@ class AdminDashboardController extends Controller
 
         return response()->streamDownload(function () use ($requests, $lastRow): void {
             $output = fopen('php://output', 'w');
+            if ($output === false) {
+                throw new RuntimeException('Unable to open the CSV output stream.');
+            }
             fwrite($output, "\xEF\xBB\xBF");
             fputcsv($output, ['Ventis POS - Procurement Requests']);
             fputcsv($output, ['Generated at', now()->toDateTimeString()]);
@@ -70,7 +77,7 @@ class AdminDashboardController extends Controller
         return response()->download($path, 'link-tech-quotation-'.now()->format('Y-m-d').'.xlsx')->deleteFileAfterSend(true);
     }
 
-    public function exportRequestsPdf()
+    public function exportRequestsPdf(): Response
     {
         $requests = ProcurementRequest::query()->with('user')->latest()->get();
         $html = view('reports.link-tech-quotation', ['requests' => $requests])->render();
@@ -85,7 +92,8 @@ class AdminDashboardController extends Controller
         ]);
     }
 
-    private function buildQuotationSheet($sheet, $requests, bool $internal): void
+    /** @param Collection<int, ProcurementRequest> $requests */
+    private function buildQuotationSheet(Worksheet $sheet, Collection $requests, bool $internal): void
     {
         $sheet->mergeCells('A1:'.($internal ? 'J' : 'H').'1');
         $sheet->setCellValue('A1', 'LINK-TECH COMPANY LIMITED');

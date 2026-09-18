@@ -5,8 +5,10 @@ namespace App\Livewire;
 use App\Mail\CompanyFeedbackMail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use RuntimeException;
 
 class PosTerminal extends Component
 {
@@ -40,6 +42,11 @@ class PosTerminal extends Component
             'reportFile' => ['required', 'file', 'mimes:pdf', 'max:10240'],
         ]);
 
+        $attachmentData = $this->reportFile->get();
+        if ($attachmentData === false) {
+            throw new RuntimeException('Unable to read the feedback report.');
+        }
+
         Mail::to($validated['companyEmail'])
             ->cc($validated['customerEmail'])
             ->send(new CompanyFeedbackMail(
@@ -47,7 +54,7 @@ class PosTerminal extends Component
                 $validated['subject'],
                 $validated['message'],
                 'Gilta Makundi',
-                $this->reportFile->get(),
+                $attachmentData,
                 $this->reportFile->getClientOriginalName(),
             ));
 
@@ -55,7 +62,7 @@ class PosTerminal extends Component
         session()->flash('feedback-sent', 'Feedback report sent successfully.');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.pos-terminal');
     }

@@ -14,6 +14,7 @@ class CompanyDocument extends Model
         return ['expires_at' => 'date'];
     }
 
+    /** @return BelongsTo<User, $this> */
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');

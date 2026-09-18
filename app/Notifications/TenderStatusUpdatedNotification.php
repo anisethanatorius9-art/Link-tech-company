@@ -14,6 +14,7 @@ class TenderStatusUpdatedNotification extends Notification implements ShouldQueu
 
     public function __construct(public TenderSubmission $submission) {}
 
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['mail'];

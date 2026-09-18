@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,6 +14,7 @@ class UserCredentialsNotification extends Notification implements ShouldQueue
 
     public function __construct(public string $temporaryPassword) {}
 
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['mail'];
@@ -20,6 +22,10 @@ class UserCredentialsNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
+        if (! $notifiable instanceof User) {
+            throw new \InvalidArgumentException('User credentials notifications require a User recipient.');
+        }
+
         return (new MailMessage)
             ->subject('Your Link-Tech workspace access')
             ->greeting('Welcome to Link-Tech')

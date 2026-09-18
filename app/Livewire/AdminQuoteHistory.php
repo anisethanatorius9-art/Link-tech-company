@@ -3,11 +3,12 @@
 namespace App\Livewire;
 
 use App\Models\Tender;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class AdminQuoteHistory extends Component
 {
-    public function render()
+    public function render(): View
     {
         $quotes = Tender::query()
             ->with('creator')

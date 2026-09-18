@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Illuminate\View\View;
 use Livewire\Component;
 
 class Translation extends Component
@@ -27,7 +28,7 @@ class Translation extends Component
         $this->setLanguage($locale);
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.translation');
     }

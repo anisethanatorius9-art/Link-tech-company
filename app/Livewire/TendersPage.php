@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Notifications\TenderSubmittedNotification;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -76,7 +77,7 @@ class TendersPage extends Component
         Flux::toast(variant: 'success', text: 'Tender saved as draft.');
     }
 
-    public function render()
+    public function render(): View
     {
         $user = Auth::user();
         $isAdmin = $user instanceof User && $user->isAdmin();

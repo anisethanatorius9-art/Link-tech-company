@@ -15,11 +15,13 @@ class Shift extends Model
         return ['opened_at' => 'datetime', 'closed_at' => 'datetime', 'expected_cash' => 'decimal:2', 'expected_mobile' => 'decimal:2', 'expected_card' => 'decimal:2', 'actual_cash' => 'decimal:2', 'actual_mobile' => 'decimal:2', 'actual_card' => 'decimal:2', 'variance' => 'decimal:2'];
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return HasMany<Sale, $this> */
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);

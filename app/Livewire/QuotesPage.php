@@ -8,12 +8,14 @@ use App\Models\User;
 use App\Notifications\TenderQuoteDecisionNotification;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class QuotesPage extends Component
 {
     public ?int $selectedTenderId = null;
 
+    /** @var array<int, array{description: string, unit: string, quantity: int|float, unit_price: int|float}> */
     public array $lineItems = [['description' => '', 'unit' => 'item', 'quantity' => 1, 'unit_price' => 0]];
 
     public string $quoteFeedback = '';
@@ -100,7 +102,7 @@ class QuotesPage extends Component
         return $this->subtotal() + $this->vat();
     }
 
-    public function render()
+    public function render(): View
     {
         $user = Auth::user();
         $isAdmin = $user instanceof User && $user->isAdmin();

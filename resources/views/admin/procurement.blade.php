@@ -1,1 +1,3 @@
-<x-layouts::admin :title="__('Procurement')"><livewire:admin.procurement /></x-layouts::admin>
+<x-layouts::admin :title="__('Procurement')">
+    <livewire:admin.procurement />
+</x-layouts::admin>
