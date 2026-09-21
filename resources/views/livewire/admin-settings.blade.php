@@ -109,30 +109,28 @@
                             </div>
 
                             <div class="mt-6 overflow-x-auto">
-                                <table class="w-full text-left text-sm">
-                                    <thead class="border-b border-zinc-200 text-xs uppercase text-zinc-500 dark:border-zinc-700">
-                                        <tr>
-                                            <th class="px-3 py-3">{{ __('Time') }}</th>
-                                            <th class="px-3 py-3">{{ __('User') }}</th>
-                                            <th class="px-3 py-3">{{ __('Action') }}</th>
-                                            <th class="px-3 py-3">{{ __('Tender') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                <flux:table>
+                                    <flux:table.columns>
+                                        <flux:table.column>{{ __('Time') }}</flux:table.column>
+                                        <flux:table.column>{{ __('User') }}</flux:table.column>
+                                        <flux:table.column>{{ __('Action') }}</flux:table.column>
+                                        <flux:table.column>{{ __('Tender') }}</flux:table.column>
+                                    </flux:table.columns>
+                                    <flux:table.rows>
                                         @forelse ($activities as $activity)
-                                            <tr>
-                                                <td class="px-3 py-3 whitespace-nowrap">{{ $activity->created_at?->format('M j, Y H:i') }}</td>
-                                                <td class="px-3 py-3">{{ $activity->user?->name ?? __('System') }}</td>
-                                                <td class="px-3 py-3">{{ $activity->description ?: str_replace('_', ' ', ucfirst($activity->type)) }}</td>
-                                                <td class="px-3 py-3">#{{ $activity->tender_id }}</td>
-                                            </tr>
+                                            <flux:table.row>
+                                                <flux:table.cell class="whitespace-nowrap">{{ $activity->created_at?->format('M j, Y H:i') }}</flux:table.cell>
+                                                <flux:table.cell>{{ $activity->user?->name ?? __('System') }}</flux:table.cell>
+                                                <flux:table.cell>{{ $activity->description ?: str_replace('_', ' ', ucfirst($activity->type)) }}</flux:table.cell>
+                                                <flux:table.cell>#{{ $activity->tender_id }}</flux:table.cell>
+                                            </flux:table.row>
                                         @empty
-                                            <tr>
-                                                <td colspan="4" class="px-3 py-10 text-center text-zinc-500">{{ __('No audit activity recorded yet.') }}</td>
-                                            </tr>
+                                            <flux:table.row>
+                                                <flux:table.cell colspan="4" class="py-10 text-center text-zinc-500">{{ __('No audit activity recorded yet.') }}</flux:table.cell>
+                                            </flux:table.row>
                                         @endforelse
-                                    </tbody>
-                                </table>
+                                    </flux:table.rows>
+                                </flux:table>
                             </div>
                         </flux:card>
                     </div>
