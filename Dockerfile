@@ -1,4 +1,4 @@
-# cspell:ignore libzip Laravel libjpeg libfreetype freetype
+# cspell:ignore libzip libsqlite Laravel libjpeg libfreetype freetype
 FROM php:8.4-cli
 
 # Install system dependencies

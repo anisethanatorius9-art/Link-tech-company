@@ -17,7 +17,7 @@ class TenderQuoteController extends Controller
     public function pdf(Tender $tender): Response
     {
         $user = Auth::user();
-        abort_unless($user instanceof User && Gate::allows('view', $tender) && ($user->isAdmin() || $tender->quote_status !== 'draft'), 403);
+        abort_unless($user instanceof User && Gate::allows('view', $tender), 403);
         $dompdf = new Dompdf;
         $dompdf->loadHtml(view('quotes.pdf', ['tender' => $tender->load(['quoteItems', 'creator'])])->render());
         $dompdf->setPaper('A4');
@@ -25,14 +25,14 @@ class TenderQuoteController extends Controller
 
         return response($dompdf->output(), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="quotation-'.$tender->reference_no.'.pdf"',
+            'Content-Disposition' => 'attachment; filename="quotation-' . $tender->reference_no . '.pdf"',
         ]);
     }
 
     public function excel(Tender $tender): Response
     {
         $user = Auth::user();
-        abort_unless($user instanceof User && $user->isAdmin() && $tender->quoteItems()->exists(), 403);
+        abort_unless($user instanceof User && Gate::allows('view', $tender) && $tender->quoteItems()->exists(), 403);
         $tender->load(['quoteItems', 'creator']);
         $sheet = (new Spreadsheet)->getActiveSheet();
         $sheet->fromArray([
@@ -61,7 +61,7 @@ class TenderQuoteController extends Controller
 
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="quotation-'.$tender->reference_no.'.xlsx"',
+            'Content-Disposition' => 'attachment; filename="quotation-' . $tender->reference_no . '.xlsx"',
         ]);
     }
 }
