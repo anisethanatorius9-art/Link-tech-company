@@ -15,26 +15,30 @@
 
         <flux:card class="overflow-hidden border-[#dce3d8] bg-white p-0 dark:border-zinc-800 dark:bg-zinc-900">
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-[#edf7ef] text-xs uppercase tracking-wider text-[#637168] dark:bg-zinc-800">
-                        <tr><th class="px-5 py-3">Name</th><th class="px-5 py-3">Contact</th><th class="px-5 py-3">Position</th><th class="px-5 py-3">Access</th><th class="px-5 py-3 text-right">Actions</th></tr>
-                    </thead>
-                    <tbody class="divide-y divide-[#edf0eb] dark:divide-zinc-800">
+                <flux:table>
+                    <flux:table.columns>
+                        <flux:table.column>Name</flux:table.column>
+                        <flux:table.column>Contact</flux:table.column>
+                        <flux:table.column>Position</flux:table.column>
+                        <flux:table.column>Access</flux:table.column>
+                        <flux:table.column class="text-right">Actions</flux:table.column>
+                    </flux:table.columns>
+                    <flux:table.rows>
                         @forelse ($users as $user)
-                            <tr>
-                                <td class="px-5 py-4 font-semibold">{{ $user->name }}</td>
-                                <td class="space-y-1 px-5 py-4 text-[#637168]"><div>{{ $user->email }}</div><div class="text-xs">{{ $user->phone ?: 'No phone added' }}</div></td>
-                                <td class="px-5 py-4"><div>{{ $user->position ?: ucfirst($user->role) }}</div><div class="mt-1 text-xs text-zinc-500">{{ $user->isAdmin() ? 'Company admin' : 'Procurement officer' }}</div></td>
-                                <td class="space-y-1 px-5 py-4"><div><flux:badge :color="$user->is_active ? 'green' : 'red'">{{ $user->is_active ? 'Active' : 'Suspended' }}</flux:badge></div>@if($user->must_change_password)<div class="text-xs text-amber-600">Password reset required</div>@endif</td>
-                                <td class="px-5 py-4 text-right">
-                                    <div class="flex justify-end gap-2"><flux:button wire:click="resetPassword({{ $user->id }})" wire:confirm="Send new temporary credentials to this user?" icon="key" variant="ghost" size="sm">Reset password</flux:button><flux:button wire:click="toggleAccess({{ $user->id }})" wire:confirm="{{ $user->is_active ? 'Stop this user from accessing the system?' : 'Allow this user to access the system again?' }}" icon="{{ $user->is_active ? 'no-symbol' : 'check' }}" variant="{{ $user->is_active ? 'ghost' : 'primary' }}" size="sm" :disabled="$user->is(auth()->user())">{{ $user->is_active ? 'Suspend' : 'Activate' }}</flux:button></div>
-                                </td>
-                            </tr>
+                            <flux:table.row>
+                                <flux:table.cell class="font-semibold">{{ $user->name }}</flux:table.cell>
+                                <flux:table.cell><div>{{ $user->email }}</div><div class="text-xs text-[#637168]">{{ $user->phone ?: 'No phone added' }}</div></flux:table.cell>
+                                <flux:table.cell><div>{{ $user->position ?: ucfirst($user->role) }}</div><div class="mt-1 text-xs text-zinc-500">{{ $user->isAdmin() ? 'Company admin' : 'Procurement officer' }}</div></flux:table.cell>
+                                <flux:table.cell><div><flux:badge :color="$user->is_active ? 'green' : 'red'">{{ $user->is_active ? 'Active' : 'Suspended' }}</flux:badge></div>@if($user->must_change_password)<div class="text-xs text-amber-600">Password reset required</div>@endif</flux:table.cell>
+                                <flux:table.cell class="text-right">
+                                    <div class="flex justify-end gap-2"><flux:button wire:click="resetPassword({{ $user->id }})" wire:confirm="Send new temporary credentials to this user?" icon="key" variant="ghost" size="sm">Reset password</flux:button><flux:button wire:click="toggleAccess({{ $user->id }})" wire:confirm="{{ $user->is_active ? 'Stop this user from accessing the system?' : 'Allow this user to access the system again?' }}" icon="{{ $user->is_active ? 'no-symbol' : 'check' }}" variant="{{ $user->is_active ? 'ghost' : 'primary' }}" size="sm" :disabled="$user->is(auth()->user())">{{ $user->is_active ? 'Suspend' : 'Activate' }}</flux:button><flux:button wire:click="deleteUser({{ $user->id }})" wire:confirm="Permanently delete this user and their account data? This action cannot be undone." icon="trash" variant="danger" size="sm" :disabled="$user->is(auth()->user())">Delete</flux:button></div>
+                                </flux:table.cell>
+                            </flux:table.row>
                         @empty
-                            <tr><td colspan="5" class="px-5 py-12 text-center text-[#637168]">No users match your search.</td></tr>
+                            <flux:table.row><flux:table.cell colspan="5" class="py-12 text-center text-[#637168]">No users match your search.</flux:table.cell></flux:table.row>
                         @endforelse
-                    </tbody>
-                </table>
+                    </flux:table.rows>
+                </flux:table>
             </div>
         </flux:card>
     </div>

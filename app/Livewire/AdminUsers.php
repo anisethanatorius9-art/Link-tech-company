@@ -95,6 +95,17 @@ class AdminUsers extends Component
         $user->update(['is_active' => ! $user->is_active]);
     }
 
+    public function deleteUser(int $userId): void
+    {
+        $user = User::query()->findOrFail($userId);
+
+        abort_if($user->is(Auth::user()), 403, 'You cannot delete your own account.');
+
+        $user->delete();
+
+        Flux::toast(variant: 'success', text: 'User deleted permanently.');
+    }
+
     public function resetPassword(int $userId): void
     {
         $user = User::query()->findOrFail($userId);
