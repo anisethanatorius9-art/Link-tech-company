@@ -31,9 +31,13 @@ test('users table paginates and sorts only approved columns', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     User::factory()->count(11)->create();
 
-    Livewire::actingAs($admin)
+    $component = Livewire::actingAs($admin)
         ->test(AdminUsers::class)
-        ->assertSee('12 accounts')
+        ->assertHasNoErrors();
+
+    expect($component->instance()->users()->total())->toBe(12);
+
+    $component
         ->call('sort', 'name')
         ->assertSet('sortBy', 'name')
         ->assertSet('sortDirection', 'asc')

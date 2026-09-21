@@ -168,6 +168,9 @@ class AdminUsers extends Component
 
     public function render(): View
     {
-        return view('livewire.admin.users');
+        return view('livewire.admin.users', [
+            'activeCount' => User::query()->where('is_active', true)->count(),
+            'suspendedCount' => User::query()->where('is_active', false)->count(),
+        ]);
     }
 }

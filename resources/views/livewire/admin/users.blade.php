@@ -10,17 +10,30 @@
         </div>
 
         <flux:card class="border-[#dce3d8] bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                 <div class="w-full md:max-w-md">
                     <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Search by name or email" />
                 </div>
-                <flux:text class="text-sm text-[#637168] dark:text-zinc-400">{{ $this->users->total() }} {{ $this->users->total() === 1 ? 'account' : 'accounts' }}</flux:text>
+                <div class="grid grid-cols-3 gap-6 border-t border-[#edf0eb] pt-4 lg:min-w-[390px] lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0 dark:border-zinc-800">
+                    <div>
+                        <flux:text class="text-xs uppercase tracking-wide text-zinc-500">Total</flux:text>
+                        <flux:heading size="sm" class="mt-1">{{ $this->users->total() }}</flux:heading>
+                    </div>
+                    <div>
+                        <flux:text class="text-xs uppercase tracking-wide text-zinc-500">Active</flux:text>
+                        <flux:heading size="sm" class="mt-1 text-emerald-600">{{ $activeCount }}</flux:heading>
+                    </div>
+                    <div>
+                        <flux:text class="text-xs uppercase tracking-wide text-zinc-500">Suspended</flux:text>
+                        <flux:heading size="sm" class="mt-1 text-rose-600">{{ $suspendedCount }}</flux:heading>
+                    </div>
+                </div>
             </div>
         </flux:card>
 
-        <flux:card class="overflow-hidden border-[#dce3d8] bg-white p-0 dark:border-zinc-800 dark:bg-zinc-900">
+        <flux:card class="overflow-hidden border-[#dce3d8] bg-white p-0 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
             <div class="overflow-x-auto">
-                <flux:table :paginate="$this->users" class="min-w-[850px]">
+                <flux:table :paginate="$this->users" class="min-w-[960px] text-sm">
                     <flux:table.columns>
                         <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
                         <flux:table.column sortable :sorted="$sortBy === 'role'" :direction="$sortDirection" wire:click="sort('role')">Role &amp; position</flux:table.column>
@@ -32,7 +45,7 @@
                     <flux:table.rows>
                         @forelse ($this->users as $user)
                             <flux:table.row :key="$user->id">
-                                <flux:table.cell>
+                                <flux:table.cell class="py-4">
                                     <div class="flex items-center gap-3">
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#dff1e4] text-sm font-bold text-[#246344] dark:bg-emerald-950 dark:text-emerald-300">{{ $user->initials() }}</div>
                                         <div class="min-w-0">
@@ -41,22 +54,22 @@
                                         </div>
                                     </div>
                                 </flux:table.cell>
-                                <flux:table.cell>
+                                <flux:table.cell class="py-4">
                                     <div class="font-medium">{{ ucfirst($user->role) }}</div>
                                     <div class="mt-1 text-xs text-zinc-500">{{ $user->position ?: 'No position added' }}</div>
                                 </flux:table.cell>
-                                <flux:table.cell>
+                                <flux:table.cell class="py-4">
                                     <div class="max-w-[230px] truncate">{{ $user->email }}</div>
                                     <div class="mt-1 text-xs text-zinc-500">{{ $user->phone ?: 'No phone added' }}</div>
                                 </flux:table.cell>
-                                <flux:table.cell>
+                                <flux:table.cell class="py-4">
                                     <flux:badge :color="$user->is_active ? 'green' : 'red'">{{ $user->is_active ? 'Active' : 'Suspended' }}</flux:badge>
                                     @if($user->must_change_password)
                                         <div class="mt-1 text-xs text-amber-600">Password reset required</div>
                                     @endif
                                 </flux:table.cell>
-                                <flux:table.cell class="whitespace-nowrap">{{ $user->created_at?->format('M j, Y') }}</flux:table.cell>
-                                <flux:table.cell align="end">
+                                <flux:table.cell class="whitespace-nowrap py-4">{{ $user->created_at?->format('M j, Y') }}</flux:table.cell>
+                                <flux:table.cell align="end" class="py-4">
                                     <div class="flex justify-end gap-1">
                                         <flux:button wire:click="resetPassword({{ $user->id }})" wire:confirm="Send new temporary credentials to this user?" icon="key" variant="ghost" size="sm" aria-label="Reset password" title="Reset password" />
                                         <flux:button wire:click="toggleAccess({{ $user->id }})" wire:confirm="{{ $user->is_active ? 'Stop this user from accessing the system?' : 'Allow this user to access the system again?' }}" icon="{{ $user->is_active ? 'no-symbol' : 'check' }}" variant="{{ $user->is_active ? 'ghost' : 'primary' }}" size="sm" aria-label="{{ $user->is_active ? 'Suspend user' : 'Activate user' }}" title="{{ $user->is_active ? 'Suspend user' : 'Activate user' }}" :disabled="$user->is(auth()->user())" />
