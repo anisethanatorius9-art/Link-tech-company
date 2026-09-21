@@ -1,37 +1,65 @@
 <div class="min-h-full w-full flex-1 bg-[#f6f7f2] p-4 text-[#17221b] lg:p-8 dark:bg-zinc-950 dark:text-zinc-100">
-    <div class="mx-auto max-w-7xl space-y-8">
-        <div class="flex flex-col justify-between gap-4 border-b border-[#dce3d8] pb-6 sm:flex-row sm:items-end dark:border-zinc-800">
+    <div class="mx-auto max-w-7xl space-y-6">
+        <div class="flex flex-col justify-between gap-5 border-b border-[#dce3d8] pb-6 sm:flex-row sm:items-end dark:border-zinc-800">
             <div>
-                <flux:text class="mb-2 text-xs font-bold uppercase tracking-[.2em] text-[#2d7a57]">Management</flux:text>
+                <flux:text class="mb-2 text-xs font-bold uppercase tracking-[.2em] text-[#2d7a57]">Workspace management</flux:text>
                 <flux:heading size="xl">Users &amp; staff</flux:heading>
-                <flux:text class="mt-2">View everyone who has joined the Ventis system.</flux:text>
+                <flux:text class="mt-2">Manage access, credentials, and staff accounts from one place.</flux:text>
             </div>
-            <flux:button wire:click="openCreate" variant="primary" icon="plus">Create user</flux:button>
+            <flux:button wire:click="openCreate" variant="primary" icon="user-plus">Create user</flux:button>
         </div>
 
-        <flux:card class="border-[#dce3d8] bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-            <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Search by name or email" />
+        <flux:card class="border-[#dce3d8] bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div class="w-full md:max-w-md">
+                    <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Search by name or email" />
+                </div>
+                <flux:text class="text-sm text-[#637168] dark:text-zinc-400">{{ $users->count() }} {{ Str::plural('account', $users->count()) }}</flux:text>
+            </div>
         </flux:card>
 
         <flux:card class="overflow-hidden border-[#dce3d8] bg-white p-0 dark:border-zinc-800 dark:bg-zinc-900">
             <div class="overflow-x-auto">
-                <flux:table>
+                <flux:table class="min-w-[850px]">
                     <flux:table.columns>
                         <flux:table.column>Name</flux:table.column>
+                        <flux:table.column>Role &amp; position</flux:table.column>
                         <flux:table.column>Contact</flux:table.column>
-                        <flux:table.column>Position</flux:table.column>
                         <flux:table.column>Access</flux:table.column>
-                        <flux:table.column class="text-right">Actions</flux:table.column>
+                        <flux:table.column align="end">Actions</flux:table.column>
                     </flux:table.columns>
                     <flux:table.rows>
                         @forelse ($users as $user)
                             <flux:table.row>
-                                <flux:table.cell class="font-semibold">{{ $user->name }}</flux:table.cell>
-                                <flux:table.cell><div>{{ $user->email }}</div><div class="text-xs text-[#637168]">{{ $user->phone ?: 'No phone added' }}</div></flux:table.cell>
-                                <flux:table.cell><div>{{ $user->position ?: ucfirst($user->role) }}</div><div class="mt-1 text-xs text-zinc-500">{{ $user->isAdmin() ? 'Company admin' : 'Procurement officer' }}</div></flux:table.cell>
-                                <flux:table.cell><div><flux:badge :color="$user->is_active ? 'green' : 'red'">{{ $user->is_active ? 'Active' : 'Suspended' }}</flux:badge></div>@if($user->must_change_password)<div class="text-xs text-amber-600">Password reset required</div>@endif</flux:table.cell>
-                                <flux:table.cell class="text-right">
-                                    <div class="flex justify-end gap-2"><flux:button wire:click="resetPassword({{ $user->id }})" wire:confirm="Send new temporary credentials to this user?" icon="key" variant="ghost" size="sm">Reset password</flux:button><flux:button wire:click="toggleAccess({{ $user->id }})" wire:confirm="{{ $user->is_active ? 'Stop this user from accessing the system?' : 'Allow this user to access the system again?' }}" icon="{{ $user->is_active ? 'no-symbol' : 'check' }}" variant="{{ $user->is_active ? 'ghost' : 'primary' }}" size="sm" :disabled="$user->is(auth()->user())">{{ $user->is_active ? 'Suspend' : 'Activate' }}</flux:button><flux:button wire:click="deleteUser({{ $user->id }})" wire:confirm="Permanently delete this user and their account data? This action cannot be undone." icon="trash" variant="danger" size="sm" :disabled="$user->is(auth()->user())">Delete</flux:button></div>
+                                <flux:table.cell>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#dff1e4] text-sm font-bold text-[#246344] dark:bg-emerald-950 dark:text-emerald-300">{{ $user->initials() }}</div>
+                                        <div class="min-w-0">
+                                            <div class="truncate font-semibold text-[#17221b] dark:text-zinc-100">{{ $user->name }}</div>
+                                            <div class="text-xs text-zinc-500">Joined {{ $user->created_at?->format('M Y') }}</div>
+                                        </div>
+                                    </div>
+                                </flux:table.cell>
+                                <flux:table.cell>
+                                    <div class="font-medium">{{ ucfirst($user->role) }}</div>
+                                    <div class="mt-1 text-xs text-zinc-500">{{ $user->position ?: 'No position added' }}</div>
+                                </flux:table.cell>
+                                <flux:table.cell>
+                                    <div class="max-w-[230px] truncate">{{ $user->email }}</div>
+                                    <div class="mt-1 text-xs text-zinc-500">{{ $user->phone ?: 'No phone added' }}</div>
+                                </flux:table.cell>
+                                <flux:table.cell>
+                                    <flux:badge :color="$user->is_active ? 'green' : 'red'">{{ $user->is_active ? 'Active' : 'Suspended' }}</flux:badge>
+                                    @if($user->must_change_password)
+                                        <div class="mt-1 text-xs text-amber-600">Password reset required</div>
+                                    @endif
+                                </flux:table.cell>
+                                <flux:table.cell align="end">
+                                    <div class="flex justify-end gap-1">
+                                        <flux:button wire:click="resetPassword({{ $user->id }})" wire:confirm="Send new temporary credentials to this user?" icon="key" variant="ghost" size="sm" aria-label="Reset password" title="Reset password" />
+                                        <flux:button wire:click="toggleAccess({{ $user->id }})" wire:confirm="{{ $user->is_active ? 'Stop this user from accessing the system?' : 'Allow this user to access the system again?' }}" icon="{{ $user->is_active ? 'no-symbol' : 'check' }}" variant="{{ $user->is_active ? 'ghost' : 'primary' }}" size="sm" aria-label="{{ $user->is_active ? 'Suspend user' : 'Activate user' }}" title="{{ $user->is_active ? 'Suspend user' : 'Activate user' }}" :disabled="$user->is(auth()->user())" />
+                                        <flux:button wire:click="deleteUser({{ $user->id }})" wire:confirm="Permanently delete this user and their account data? This action cannot be undone." icon="trash" variant="danger" size="sm" aria-label="Delete user" title="Delete user" :disabled="$user->is(auth()->user())" />
+                                    </div>
                                 </flux:table.cell>
                             </flux:table.row>
                         @empty
