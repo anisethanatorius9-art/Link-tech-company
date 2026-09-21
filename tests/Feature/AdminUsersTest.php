@@ -26,3 +26,18 @@ test('admin cannot delete their own account', function () {
 
     expect(User::query()->find($admin->id))->not->toBeNull();
 });
+
+test('users table paginates and sorts only approved columns', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    User::factory()->count(11)->create();
+
+    Livewire::actingAs($admin)
+        ->test(AdminUsers::class)
+        ->assertSee('12 accounts')
+        ->call('sort', 'name')
+        ->assertSet('sortBy', 'name')
+        ->assertSet('sortDirection', 'asc')
+        ->call('sort', 'not_a_column')
+        ->assertSet('sortBy', 'name')
+        ->assertSet('sortDirection', 'asc');
+});

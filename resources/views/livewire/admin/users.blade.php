@@ -14,23 +14,24 @@
                 <div class="w-full md:max-w-md">
                     <flux:input wire:model.live="search" icon="magnifying-glass" placeholder="Search by name or email" />
                 </div>
-                <flux:text class="text-sm text-[#637168] dark:text-zinc-400">{{ $users->count() }} {{ Str::plural('account', $users->count()) }}</flux:text>
+                <flux:text class="text-sm text-[#637168] dark:text-zinc-400">{{ $this->users->total() }} {{ $this->users->total() === 1 ? 'account' : 'accounts' }}</flux:text>
             </div>
         </flux:card>
 
         <flux:card class="overflow-hidden border-[#dce3d8] bg-white p-0 dark:border-zinc-800 dark:bg-zinc-900">
             <div class="overflow-x-auto">
-                <flux:table class="min-w-[850px]">
+                <flux:table :paginate="$this->users" class="min-w-[850px]">
                     <flux:table.columns>
-                        <flux:table.column>Name</flux:table.column>
-                        <flux:table.column>Role &amp; position</flux:table.column>
+                        <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:table.column>
+                        <flux:table.column sortable :sorted="$sortBy === 'role'" :direction="$sortDirection" wire:click="sort('role')">Role &amp; position</flux:table.column>
                         <flux:table.column>Contact</flux:table.column>
-                        <flux:table.column>Access</flux:table.column>
+                        <flux:table.column sortable :sorted="$sortBy === 'is_active'" :direction="$sortDirection" wire:click="sort('is_active')">Access</flux:table.column>
+                        <flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortDirection" wire:click="sort('created_at')">Joined</flux:table.column>
                         <flux:table.column align="end">Actions</flux:table.column>
                     </flux:table.columns>
                     <flux:table.rows>
-                        @forelse ($users as $user)
-                            <flux:table.row>
+                        @forelse ($this->users as $user)
+                            <flux:table.row :key="$user->id">
                                 <flux:table.cell>
                                     <div class="flex items-center gap-3">
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#dff1e4] text-sm font-bold text-[#246344] dark:bg-emerald-950 dark:text-emerald-300">{{ $user->initials() }}</div>
@@ -54,6 +55,7 @@
                                         <div class="mt-1 text-xs text-amber-600">Password reset required</div>
                                     @endif
                                 </flux:table.cell>
+                                <flux:table.cell class="whitespace-nowrap">{{ $user->created_at?->format('M j, Y') }}</flux:table.cell>
                                 <flux:table.cell align="end">
                                     <div class="flex justify-end gap-1">
                                         <flux:button wire:click="resetPassword({{ $user->id }})" wire:confirm="Send new temporary credentials to this user?" icon="key" variant="ghost" size="sm" aria-label="Reset password" title="Reset password" />
@@ -63,7 +65,7 @@
                                 </flux:table.cell>
                             </flux:table.row>
                         @empty
-                            <flux:table.row><flux:table.cell colspan="5" class="py-12 text-center text-[#637168]">No users match your search.</flux:table.cell></flux:table.row>
+                            <flux:table.row><flux:table.cell colspan="6" class="py-12 text-center text-[#637168]">No users match your search.</flux:table.cell></flux:table.row>
                         @endforelse
                     </flux:table.rows>
                 </flux:table>

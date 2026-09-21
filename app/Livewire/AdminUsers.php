@@ -9,11 +9,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class AdminUsers extends Component
 {
+    use WithPagination;
+
     public string $search = '';
+
+    public string $sortBy = 'created_at';
+
+    public string $sortDirection = 'desc';
 
     public bool $showCreateForm = false;
 
@@ -34,6 +42,30 @@ class AdminUsers extends Component
     public bool $isActive = true;
 
     public bool $forcePasswordChange = true;
+
+    /** @var array<int, string> */
+    private array $sortableColumns = ['name', 'role', 'created_at', 'is_active'];
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function sort(string $column): void
+    {
+        if (! in_array($column, $this->sortableColumns, true)) {
+            return;
+        }
+
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
+
+        $this->resetPage();
+    }
 
     /** @return array<string, array<int, mixed>> */
     protected function rules(): array
@@ -125,13 +157,17 @@ class AdminUsers extends Component
         $this->resetValidation();
     }
 
+    #[Computed]
+    public function users()
+    {
+        return User::query()
+            ->when($this->search !== '', fn ($query) => $query->where(fn ($query) => $query->where('name', 'like', '%'.$this->search.'%')->orWhere('email', 'like', '%'.$this->search.'%')))
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->paginate(10);
+    }
+
     public function render(): View
     {
-        $users = User::query()
-            ->when($this->search !== '', fn ($query) => $query->where(fn ($query) => $query->where('name', 'like', '%'.$this->search.'%')->orWhere('email', 'like', '%'.$this->search.'%')))
-            ->latest('created_at')
-            ->get();
-
-        return view('livewire.admin.users', ['users' => $users]);
+        return view('livewire.admin.users');
     }
 }
